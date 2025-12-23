@@ -7,12 +7,10 @@ from facebook_business.adobjects.adaccount import AdAccount
 from facebook_business.adobjects.adsinsights import AdsInsights
 from datetime import datetime, timedelta
 import plotly.express as px
-
-# ===================== Credentials =====================
 team_credentials = {
     "qaoud": {"username": "qaoudCairo", "password": "qAOUD25cairo"},
     "taher": {"username": "taherALEX", "password": "tAherALEx25"},
-    "admin": {"username": "admin", "password": "admin_pass"}  # Admin user
+    "admin": {"username": "admin", "password": "admin_pass"}  
 }
 
 teams = {
@@ -53,27 +51,19 @@ teams = {
         
     }
 }
-
-# ===================== Facebook API Setup =====================
 access_token = "EAAIObOmY9V4BPrkIlmtbU5YrIxrUYK27NZBPxQBoZCMa2ojeiPq4iRrjww5jARZAzbQOZAn5ycZAl5bQoVt6SLvBV4Sae7JEXhTlY1LsDIoND625O4ZCEdrLZCXE2WtPUwMAtJK4V5XoP3MPiwhNZCezKXwrMNqoYT0mdk8ssoVxnLrj3uEfnGEOvYJZBAxR8"
 FacebookAdsApi.init(access_token=access_token)
 me = User(fbid='me')
 accounts = me.get_ad_accounts(fields=['id', 'name'])
-
-# ===================== Date Setup =====================
 today = datetime.today()
 first_of_month = today.replace(day=1)
 since_date = first_of_month.strftime('%Y-%m-%d')
 until_date = today.strftime('%Y-%m-%d')
-
-# ===================== Streamlit Login =====================
 st.title("Facebook Ads Gender Spend Dashboard")
 st.sidebar.header("Login")
 
 username = st.sidebar.text_input("Username")
 password = st.sidebar.text_input("Password", type="password")
-
-# Authenticate
 logged_in_team = None
 is_admin = False
 for team, creds in team_credentials.items():
@@ -92,20 +82,15 @@ if is_admin:
     st.success("Logged in as Admin")
 else:
     st.success(f"Logged in as {logged_in_team}")
-
-# ===================== Fetch Insights =====================
 team_gender_totals = defaultdict(lambda: defaultdict(lambda: {'Female': 0, 'Male': 0}))
 
 for account in accounts:
     account_id = account['id']
     account_name = account['name']
 
-    # Identify team
     account_team = next((team for team, ids in teams.items() if account_id in ids), None)
     if not account_team:
-        continue  # Skip accounts not in any team
-
-    # Only fetch for admin or the logged-in team
+        continue  
     if not is_admin and account_team != logged_in_team:
         continue
 
@@ -121,7 +106,7 @@ for account in accounts:
         for insight in insights:
             gender = insight.get('gender', 'Unknown').capitalize()
             if gender not in ['Male', 'Female']:
-                continue  # Skip Unknown
+                continue  
 
             spend = float(insight.get('spend', 0.0))
             if spend > 0:
@@ -130,7 +115,6 @@ for account in accounts:
     except Exception as e:
         st.error(f"Error fetching data for account {account_name}: {e}")
 
-# ===================== Prepare Data =====================
 rows = []
 for team_name, accounts_data in team_gender_totals.items():
     for account_name, genders in accounts_data.items():
@@ -150,7 +134,6 @@ for team_name, accounts_data in team_gender_totals.items():
 
 df = pd.DataFrame(rows)
 
-# ===================== Display Table =====================
 if df.empty:
     st.info("No accounts with Male or Female spend found.")
 else:
@@ -167,7 +150,6 @@ else:
 
     st.dataframe(display_df)
 
-    # ===================== Donut Chart =====================
     st.subheader("Overall Gender Spend")
     donut_data = display_df.melt(id_vars=['Account Name'], value_vars=['Female Spend', 'Male Spend'],
                                  var_name='Gender', value_name='Spend')
@@ -180,4 +162,5 @@ else:
         title="Overall Gender Spend"
     )
     st.plotly_chart(fig, use_container_width=True)
+
 
