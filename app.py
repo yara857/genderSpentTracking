@@ -10,8 +10,8 @@ import plotly.express as px
 
 # ===================== Credentials =====================
 team_credentials = {
-    "qaoud": {"username": "qaoud_user", "password": "qaoud_pass"},
-    "taher": {"username": "taher_user", "password": "taher_pass"},
+    "qaoud": {"username": "qaoudCairo", "password": "qAOUD25cairo"},
+    "taher": {"username": "taherALEX", "password": "tAherALEx25"},
     "admin": {"username": "admin", "password": "admin_pass"}  # Admin user
 }
 
@@ -180,3 +180,4 @@ else:
         title="Overall Gender Spend"
     )
     st.plotly_chart(fig, use_container_width=True)
+
