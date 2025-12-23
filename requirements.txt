@@ -7,3 +7,4 @@ requests
 pandas
 facebook_business
 st_autorefresh
+plotly
